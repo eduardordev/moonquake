@@ -3,12 +3,23 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from './components/sidebar/sidebar';
 import './App.css';
 import ModelViewer from './components/moon_model/moon';
+import axios from 'axios';
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
   const [showButton, setShowButton] = useState(true);
   const [showSidebar, setShowSidebar] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
+
+
+  const getAllQuakes = () => {
+    axios.get('http://localhost:5000/api/v1/quakes')
+      .then((response) => {
+        console.log("Response", response.data);
+      }).catch((err) => {
+        console.error(err)
+      })
+  };
 
 
 
@@ -42,7 +53,14 @@ function App() {
       <div className="center-container">
         <div className={`title ${showButton ? '' : 'moveUp'}`} id="moonquakeTitle">MOONQUAKE VISOR MAP</div>
         {showButton && (
-          <button onClick={toggleTitlePosition} className="startButton">START ➔</button>
+          <button
+            onClick={() => {
+              getAllQuakes()
+              toggleTitlePosition()
+            }}
+            className="startButton">
+            START ➔
+          </button>
         )}
       </div>
       <div className={`model ${isStarted ? 'fade-in' : ''}`}>
