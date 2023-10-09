@@ -12,7 +12,7 @@ function Modal({ isOpen, quake, onClose }) {
                 onClose
             }>Cerrar</button> */}
             <h2>Moonquake Details</h2>
-            <p><strong>Date:</strong> {quake.date.toString()}</p>
+            <p><strong>Date:</strong> {quake.date.toLocaleDateString()}</p>
             <p><strong>Magnitude:</strong> {quake.magnitude}</p>
             <p><strong>Location:</strong> {quake.latitude}</p>
             <p><strong>Time:</strong> {quake.time}</p>
