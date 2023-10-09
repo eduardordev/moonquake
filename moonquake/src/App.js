@@ -2,24 +2,19 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from './components/sidebar/sidebar';
 import './App.css';
-import ModelViewer from './components/moon_model/moon';
-import axios from 'axios';
+import Moon from './components/moon_model/moon';
+
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
   const [showButton, setShowButton] = useState(true);
   const [showSidebar, setShowSidebar] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
+  const [quakes, setQuakes] = useState(false);
+  const [moonHtml, setMoonHtml] = useState('');
 
 
-  const getAllQuakes = () => {
-    axios.get('http://localhost:5000/api/v1/quakes')
-      .then((response) => {
-        console.log("Response", response.data);
-      }).catch((err) => {
-        console.error(err)
-      })
-  };
+  
 
 
 
@@ -55,7 +50,6 @@ function App() {
         {showButton && (
           <button
             onClick={() => {
-              getAllQuakes()
               toggleTitlePosition()
             }}
             className="startButton">
@@ -64,7 +58,8 @@ function App() {
         )}
       </div>
       <div className={`model ${isStarted ? 'fade-in' : ''}`}>
-        <ModelViewer />
+      
+        <Moon></Moon>
         {!isStarted && <div className="overlay fade-out"></div>}
       </div>
       {showSidebar && (

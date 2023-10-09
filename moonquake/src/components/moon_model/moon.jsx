@@ -1,38 +1,68 @@
-import React, { useEffect } from 'react';
-import * as THREE from 'three';
-import textureImage from './Bump_2K.png';
+import React, { useState, useEffect } from 'react';
+import Globe from 'react-globe.gl';  // Asegúrate de que esta es la forma correcta de importar Globe.
+import { scaleOrdinal } from 'd3-scale';
+import axios from 'axios';
 
-const ModelViewer = () => {
-  useEffect(() => {
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer();
+import lunarSurface from './lunar_surface.jpg';
+import lunarBumpmap from './lunar_bumpmap.jpg';
 
-    const geometry = new THREE.SphereGeometry(2, 32, 32);
-    const texture = new THREE.TextureLoader().load(textureImage);
-    const material = new THREE.MeshBasicMaterial({ map: texture });
-    const sphere = new THREE.Mesh(geometry, material);
+const Moon = ({ props }) => {
+    
+    const [quakes, setQuakes] = useState([]);
+    const getAllQuakes = () => {
+        axios.get('http://3.19.185.171:5000/api/v1/quakes')
+          .then((response) => {
+            console.log("Response", response.data);
+            setQuakes(response.data.map(index => {
+                return{
+                    id : index._id
+                }
+            }))
+            console.log(quakes)
+            
+          }).catch((err) => {
+            console.error(err)
+          })
+      };
+    const [landingSites, setLandingSites] = useState([]);
+    
 
-    camera.position.z = 5;
+    
 
-    scene.add(sphere);
+    const colorScale = scaleOrdinal(['orangered', 'mediumblue', 'darkgreen', 'yellow']);
+    const labelsTopOrientation = new Set(['Apollo 12', 'Luna 2', 'Luna 20', 'Luna 21', 'Luna 24', 'LCROSS Probe']); // avoid label collisions
 
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.getElementById('model-container').appendChild(renderer.domElement);
+    useEffect(() => {
+        getAllQuakes()
+    }, []);
 
-    const animate = () => {
-      requestAnimationFrame(animate);
+    useEffect(() => {
+        if (quakes.length) {
+            console.log(quakes);
+        }
+    }, [quakes]);
 
-      sphere.rotation.x += 0.01;
-      sphere.rotation.y += 0.01;
+    return (
+        <Globe
+            globeImageUrl={lunarSurface}
+            bumpImageUrl={lunarBumpmap}
+            backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
+            showGraticules={true}
+            labelsData={quakes}
+            labelText="id"
+            labelSize={1.7}
+            labelDotRadius={0.4}
+            labelPositionOffset={0.15}
+            labelDotOrientation={d => labelsTopOrientation.has(d.label) ? 'top' : 'bottom'}
+            labelColor={d => colorScale(d.agency)}
+            labelLabel={d => `
+                <div><b>${d.label}</b></div>
+                <div>${d.agency} - ${d.program} Program</div>
+                <div>Landing on <i>${new Date(d.date).toLocaleDateString()}</i></div>
+            `}
+            onLabelClick={d => window.open(d.url, '_blank')}
+        />
+    );
+}
 
-      renderer.render(scene, camera);
-    };
-
-    animate();
-  }, []);
-
-  return <div id="model-container" />;
-};
-
-export default ModelViewer;
+export default Moon;
