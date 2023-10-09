@@ -66,7 +66,7 @@ function Sidebar({ isOpen, toggleSidebar }) {
         <ul className="menu-list">
           {quakes.map(quake => (
             <li key={quake.id} onClick={() => handleQuakeClick(quake)}>
-              {quake.date.toString()}  {/* A modo de ejemplo, aquí mostraré solo la fecha */}
+              Date: {quake.date.toLocaleDateString()} - Magnitude: {quake.magnitude} - Time: {quake.time}  {/* A modo de ejemplo, aquí mostraré solo la fecha */}
             </li>
           ))}
         </ul>
@@ -78,15 +78,7 @@ function Sidebar({ isOpen, toggleSidebar }) {
           <FaTimes className={`icon ${isButOpen ? 'rotate' : ''}`} onClick={() => setIsButOpen(false)} size={30} /> :
           <FaBars className={`icon ${isButOpen ? 'rotate' : ''}`} onClick={() => setIsButOpen(true)} size={30} />}
       </button>
-      {isOpen && (
-        <ul className="menu-list">
-          {quakes.map(item => (
-            <li key={item.id}>Date: {item.date.toLocaleDateString()} - Magnitude: {item.magnitude} - Time: {item.time}</li>
-          ))}
-
-
-        </ul>
-      )}
+      
     </div>
   );
 }
